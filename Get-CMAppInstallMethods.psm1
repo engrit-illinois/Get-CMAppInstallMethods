@@ -108,7 +108,7 @@ function Get-CMAppInstallMethods {
 					Application = $app.LocalizedDisplayName
 					DeploymentType = $dt.LocalizedDisplayName
 					InstallMethod = $dt.XmlData.AppMgmtDigest.DeploymentType.Installer.InstallAction.Args.Arg | Where { $_.Name -eq "InstallCommandLine" } | Select -ExpandProperty "#text"
-					Uninstallmethod = $dt.XmlData.AppMgmtDigest.DeploymentType.Installer.UninstallAction.Args.Arg | Where { $_.Name -eq "InstallCommandLine" } | Select -ExpandProperty "#text"
+					UninstallMethod = $dt.XmlData.AppMgmtDigest.DeploymentType.Installer.UninstallAction.Args.Arg | Where { $_.Name -eq "InstallCommandLine" } | Select -ExpandProperty "#text"
 				}
 			}
 		} | Select Application,DeploymentType,InstallMethod,UninstallMethod | Sort Application
