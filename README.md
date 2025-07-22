@@ -2,10 +2,16 @@
 
 Module to pull the "Install program" and "Uninstall program" fields from all deployment types of all matching MECM applications
 
-# Example usage
+# Usage
 
 1. Download `Get-CMAppInstallMethods.psm1` to the appropriate subdirectory of your PowerShell [modules directory](https://github.com/engrit-illinois/how-to-install-a-custom-powershell-module).
-2. Run it, using the documentation provided below.
+2. Run it, using the examples and documentation provided below.
+
+# Examples
+For large queries it's recommended to capture the output as a CSV:
+```powershell
+Get-CMAppInstallMethods -Name "UIUC-ENGR-*" | Export-Csv -Path "c:\get-cmappinstallmethods.csv" -Encoding "Ascii" -NoTypeInformation
+```
 
 # Parameters
 
