@@ -71,7 +71,7 @@ function Get-CMAppInstallMethods {
 	
 	function Get-Apps {
 		log "Getting apps..."
-		$apps = Get-CMApplication -Fast -Name $Name
+		$apps = Get-CMApplication -Fast -Name $Name | Sort LocalizedDisplayName
 		$appsCount = count $apps
 		log "Found $appsCount matching apps." -L 1
 		$apps
@@ -82,7 +82,7 @@ function Get-CMAppInstallMethods {
 		$apps = $apps | ForEach-Object {
 			$app = $_
 			log $app.LocalizedDisplayName -L 1 -V 1
-			$dts = $app | Get-CMDeploymentType
+			$dts = $app | Get-CMDeploymentType | Sort LocalizedDisplayName
 			$dtsCount = count $dts
 			log "Found $dtsCount deployment types." -L 2 -V 2
 			$dts = $dts | ForEach-Object {
