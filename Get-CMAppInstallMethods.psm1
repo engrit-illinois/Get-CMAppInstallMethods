@@ -88,6 +88,12 @@ function Get-CMAppInstallMethods {
 			$dts = $dts | ForEach-Object {
 				$dt = $_
 				$xml = $dt | Select -ExpandProperty "SDMPackageXML"
+				
+				# Some deployment types return a blank SDMPackageXML. Not sure how we would extract the info we want in that case.
+				$xmlMissing = $false
+				if(-not $xml) { $xmlMissing = $true }
+				$dt = addm "XmlMissing" $xmlMissing $dt
+				
 				$xmlData = [xml]$xml
 				$dt = addm "XmlData" $xmlData $dt
 				$dt
@@ -117,11 +123,12 @@ function Get-CMAppInstallMethods {
 				[PSCustomObject]@{
 					Application = $app.LocalizedDisplayName
 					DeploymentType = $dt.LocalizedDisplayName
+					XmlMissing = $dt.XmlMissing
 					InstallMethod = $install
 					UninstallMethod = $uninstall
 				}
 			}
-		} | Select Application,DeploymentType,InstallMethod,UninstallMethod | Sort Application
+		} | Select Application,DeploymentType,XmlMissing,InstallMethod,UninstallMethod | Sort Application
 	}
 	
 	function Do-Stuff {
