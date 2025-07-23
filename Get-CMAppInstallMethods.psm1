@@ -104,11 +104,21 @@ function Get-CMAppInstallMethods {
 			$app = $_
 			$app.DeploymentTypes | ForEach-Object {
 				$dt = $_
+				
+				# Apparently all DT's contain within their XML the info for each other DT as well.
+				# So when an app has multiple DTs, if we grab the install/uninstall method for each DT, they will all be an array of all install/uninstall methods for all DTs of the app.
+				# It would be too annoying to deal with this legitimately (by associated specific install/uninstall methods to specific DTs.
+				# So as a hack, we'll just deal with the possibility that an install/uninstall method could be an array and keep all array members for all DTs, by just joining the members or something.
+				$install = $dt.XmlData.AppMgmtDigest.DeploymentType.Installer.InstallAction.Args.Arg | Where { $_.Name -eq "InstallCommandLine" } | Select -ExpandProperty "#text"
+				if($install -and ($install.count -gt 1)) { $install = "{" + ($install -join "}, {") + "}" }
+				$uninstall = $dt.XmlData.AppMgmtDigest.DeploymentType.Installer.UninstallAction.Args.Arg | Where { $_.Name -eq "InstallCommandLine" } | Select -ExpandProperty "#text"
+				if($uninstall -and ($uninstall.count -gt 1)) { $uninstall = "{" + ($uninstall -join "}, {") + "}" }
+				
 				[PSCustomObject]@{
 					Application = $app.LocalizedDisplayName
 					DeploymentType = $dt.LocalizedDisplayName
-					InstallMethod = $dt.XmlData.AppMgmtDigest.DeploymentType.Installer.InstallAction.Args.Arg | Where { $_.Name -eq "InstallCommandLine" } | Select -ExpandProperty "#text"
-					UninstallMethod = $dt.XmlData.AppMgmtDigest.DeploymentType.Installer.UninstallAction.Args.Arg | Where { $_.Name -eq "InstallCommandLine" } | Select -ExpandProperty "#text"
+					InstallMethod = $install
+					UninstallMethod = $uninstall
 				}
 			}
 		} | Select Application,DeploymentType,InstallMethod,UninstallMethod | Sort Application
